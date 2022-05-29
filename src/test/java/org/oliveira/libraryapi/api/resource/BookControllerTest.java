@@ -110,4 +110,9 @@ public class BookControllerTest {
                 .andExpect(jsonPath("errors[0]").value(Constantes.MENSAGEM_ERRO_ISBN));
 
     }
+
+    @Test
+    public void getBookDetailsTest(){
+
+    }
 }
