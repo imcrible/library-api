@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 
 import javax.validation.Valid;
@@ -50,6 +51,21 @@ public class BookController {
 //                .build();
 
         return modelMapper.map(entity, BookDTO.class);
+
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BookDTO get(@PathVariable("id") Long id){
+        return service
+                .getById(id)
+                .map (book -> modelMapper.map(book, BookDTO.class))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+
+//        Book book = service.getById(id).get();
+//        System.out.println(String.format("Id recebido via url: %d", id));
+//        return modelMapper.map(book, BookDTO.class);
 
     }
 

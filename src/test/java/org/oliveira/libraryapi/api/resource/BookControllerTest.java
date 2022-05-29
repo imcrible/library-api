@@ -1,7 +1,6 @@
 package org.oliveira.libraryapi.api.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +23,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,7 +43,7 @@ public class BookControllerTest {
     @MockBean
     BookService service;
 
-    private BookDTO createNewBook() {
+    private BookDTO createNewBookDTO() {
         return BookDTO.builder().author("Artur").title("As Aventuras").isbn("001").build();
     }
 
@@ -50,7 +51,7 @@ public class BookControllerTest {
     @DisplayName("Deve cadastrar um livro com sucesso")
     public void createBookTest() throws Exception{
 
-        BookDTO dto = createNewBook();
+        BookDTO dto = createNewBookDTO();
         Book saveBook = Book.builder().id(10L).author("Artur").title("As Aventuras").isbn("001").build();
 
         BDDMockito.given(service.save(Mockito.any(Book.class)))
@@ -92,7 +93,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve lançar erro quando tentar cadastrar livro com ISBN repetido")
     public void createBookWithDuplicatedIsbn() throws Exception{
-        BookDTO dto = createNewBook();
+        BookDTO dto = createNewBookDTO();
         String json = new ObjectMapper().writeValueAsString(dto);
 
         BDDMockito.given(service.save(Mockito.any(Book.class)))
@@ -112,7 +113,42 @@ public class BookControllerTest {
     }
 
     @Test
-    public void getBookDetailsTest(){
+    @DisplayName("Deve obter informações de um livro")
+    public void getBookDetailsTest() throws Exception{
+        Long id = 1L;
 
+        Book book = Book.builder()
+                        .id(id).title(createNewBookDTO().getTitle())
+                        .author(createNewBookDTO().getAuthor()).isbn(createNewBookDTO().getIsbn())
+                        .build();
+
+
+        BDDMockito.given(service.getById(id)).willReturn(Optional.of(book));
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BOOK_API.concat("/" + id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").value(id))
+                .andExpect(jsonPath("title").value(createNewBookDTO().getTitle()))
+                .andExpect((jsonPath("author").value(createNewBookDTO().getAuthor())))
+                .andExpect(jsonPath("isbn").value(createNewBookDTO().getIsbn()))
+        ;
+    }
+
+    @Test
+    @DisplayName("Deve retornar resource not found quando o livro procurado não existir")
+    public void bookNOtFoundTest() throws Exception {
+        Long id = 1L;
+
+        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .get(BOOK_API.concat("/"+id))
+                .accept(MediaType.APPLICATION_JSON);
+
+        mvc.perform(request).andExpect(status().isNotFound());
     }
 }
