@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest
-public class RepositoryTest {
+public class BookRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
