@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 @Data
@@ -14,8 +15,17 @@ import java.time.LocalDate;
 public class LoanDTO {
 
     private Long id;
+
+    @NotEmpty
     private String isbn;
+
+    @NotEmpty
     private String customer;
+
     private LocalDate localDate;
+
+    @NotEmpty
+    private String customerEmail;
+
     private BookDTO bookDTO;
 }

@@ -10,6 +10,7 @@ import org.oliveira.libraryapi.api.dto.BookDTO;
 import org.oliveira.libraryapi.exception.BusinessException;
 import org.oliveira.libraryapi.model.entity.Book;
 import org.oliveira.libraryapi.service.BookService;
+import org.oliveira.libraryapi.service.LoanService;
 import org.oliveira.libraryapi.util.Constantes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,6 +48,9 @@ public class BookControllerTest {
 
     @MockBean
     BookService service;
+
+    @MockBean
+    LoanService loanService;
 
     private BookDTO createNewBookDTO() {
         return BookDTO.builder().author("Artur").title("As Aventuras").isbn("001").build();

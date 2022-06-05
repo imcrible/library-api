@@ -58,7 +58,7 @@ public class LoanControllerTest {
     private LoanService loanService;
 
     private LoanDTO createNewLoadDTO() {
-        return LoanDTO.builder().isbn("123").customer("Fulano").build();
+        return LoanDTO.builder().isbn("123").customer("Fulano").customerEmail("customer@rmail.com").build();
     }
 
     private Book createNewBook() {

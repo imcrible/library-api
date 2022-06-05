@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data // substitui o Getter, Setter, ToString e EqualsAndHashCode
 @Builder
@@ -27,5 +28,8 @@ public class Book {
 
     @Column
     private String isbn;
+
+    @OneToMany( mappedBy = "book", fetch = FetchType.LAZY)
+    private List<Loan> loans;
 
 }
