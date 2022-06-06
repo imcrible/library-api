@@ -1,5 +1,6 @@
 package org.oliveira.libraryapi.api.resource;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.oliveira.libraryapi.api.dto.BookDTO;
@@ -33,6 +34,7 @@ public class LoanController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiOperation("Cria um emprestimo")
     public LoanDTO created(@RequestBody LoanDTO dto){
         Book book = bookService
                 .getBookByIsbn(dto.getIsbn())
@@ -51,6 +53,7 @@ public class LoanController {
     }
 
     @PatchMapping("{id}")
+    @ApiOperation("Retorna o emprestimo pelo id do emprestimo")
     public void returnBook(@PathVariable Long id, @RequestBody ReturnedLoanDTO dto ){
         Loan loan = loanService.getById(id)
                         .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -60,6 +63,7 @@ public class LoanController {
     }
 
     @GetMapping
+    @ApiOperation("Busca um emprestimo por parametros")
     public Page<LoanDTO> find(LoanFilterDTO filterDTO, Pageable pageRequest){
         Page<Loan> result = loanService.find(filterDTO, pageRequest);
         List<LoanDTO> loans = result.getContent().stream()

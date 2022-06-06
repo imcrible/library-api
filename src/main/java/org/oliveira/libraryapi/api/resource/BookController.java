@@ -1,5 +1,9 @@
 package org.oliveira.libraryapi.api.resource;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.oliveira.libraryapi.api.dto.BookDTO;
@@ -31,6 +35,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
+@Api("Book API")
 public class BookController {
 
     private final BookService service;
@@ -39,22 +44,11 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(CREATED)
+    @ApiOperation("Cadastra um livro")
     public BookDTO create(@RequestBody @Valid BookDTO dto){
 
-//        Book entity = Book.builder()
-//                .author(dto.getAuthor())
-//                .title(dto.getTitle())
-//                .isbn(dto.getIsbn())
-//                .build();
         Book entity = modelMapper.map(dto, Book.class);
         entity = service.save(entity);
-
-//        return BookDTO.builder()
-//                .id(entity.getId())
-//                .author(entity.getAuthor())
-//                .title(entity.getTitle())
-//                .isbn(entity.getIsbn())
-//                .build();
 
         return modelMapper.map(entity, BookDTO.class);
 
@@ -62,6 +56,7 @@ public class BookController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @ApiOperation("Busca um livro por ID")
     public BookDTO get(@PathVariable("id") Long id){
         return service
                 .getById(id)
@@ -70,6 +65,7 @@ public class BookController {
     }
 
     @GetMapping
+    @ApiOperation("Busca livro por parametros")
     public Page<BookDTO> find(BookDTO dto, Pageable pageRequest){
         Book filter = modelMapper.map(dto, Book.class);
         Page<Book> result = service.find(filter, pageRequest);
@@ -82,6 +78,12 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation("Exclui um livro por id")
+    @ApiResponses({
+            @ApiResponse(code = 204, message = "Exclusão do livro com sucesso"),
+            @ApiResponse(code = 401, message = "Execução não autorizada"),
+            @ApiResponse(code = 403, message = "Erro desconhecido")
+    })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id){
         Book book = service.getById(id)
@@ -90,6 +92,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation("Altera um livro pelo id")
     @ResponseStatus(HttpStatus.OK)
     public BookDTO update (@PathVariable Long id, @RequestBody BookDTO dto){
         Book book = service.getById(id)
@@ -101,7 +104,8 @@ public class BookController {
         return modelMapper.map(book, BookDTO.class);
     }
 
-    @GetMapping("{id}/loans}")
+    @GetMapping("{id}/loans")
+    @ApiOperation("Pesquisa um livro emprestado")
     public Page<LoanDTO> loansByBook(@PathVariable Long id, Pageable pageable){
 
         Book book = service.getById(id)
